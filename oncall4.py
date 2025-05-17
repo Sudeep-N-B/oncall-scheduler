@@ -5,7 +5,8 @@ import datetime
 OUTLINE_URL = "https://docs.dpdzero.com"
 OUTLINE_TOKEN = os.getenv("OUTLINE_TOKEN")
 DOCUMENT_ID = "2dba7c0c-26c6-4005-a82c-fab2e0d8a75a"
-SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL")
+SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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"
+
 
 # Slack user IDs mapping 
 slack_id_map = {
