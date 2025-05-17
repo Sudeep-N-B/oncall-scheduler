@@ -23,4 +23,6 @@ jobs:
 
       - name: Run oncall4 script
         run: python oncall4.py
-
+        env:
+          OUTLINE_TOKEN: ${{ secrets.OUTLINE_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
