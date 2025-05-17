@@ -1,0 +1,22 @@
+name: Run Oncall Script
+
+on:
+  schedule:
+    - cron: '15 16 * * *'  # Runs daily at 9:45 PM IST (4:15 PM UTC)
+  workflow_dispatch:        # Allows manual manual trigger from GitHub UI
+
+jobs:
+  run-oncall:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Run oncall4 script
+        run: python oncall4.py
