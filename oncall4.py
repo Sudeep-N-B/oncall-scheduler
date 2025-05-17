@@ -1,11 +1,11 @@
+import os
 import requests
 import datetime
 
 OUTLINE_URL = "https://docs.dpdzero.com"
-OUTLINE_TOKEN = "ol_api_XvEeze1CENwK6anj5YFPuD6bpkV3bc5HvexOhm"
+OUTLINE_TOKEN = os.getenv("OUTLINE_TOKEN")
 DOCUMENT_ID = "2dba7c0c-26c6-4005-a82c-fab2e0d8a75a"
-SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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"
-
+SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL")
 
 # Slack user IDs mapping 
 slack_id_map = {
@@ -29,7 +29,6 @@ headers = {
     "Content-Type": "application/json"
 }
 
-# Step 1: Fetch Outline document
 response = requests.post(f"{OUTLINE_URL}/api/documents.info", headers=headers, json={"id": DOCUMENT_ID})
 
 if response.status_code != 200:
@@ -39,7 +38,6 @@ if response.status_code != 200:
 content = response.json()["data"]["text"]
 lines = content.splitlines()
 
-# Dates
 today = datetime.date.today()
 tomorrow = today + datetime.timedelta(days=1)
 
@@ -47,19 +45,19 @@ users_to_alert = []
 
 for line in lines:
     if '|' not in line or 'Name' in line or '---' in line:
-        continue  # skip headers and separators
+        continue
 
     parts = [p.strip() for p in line.strip('|').split('|')]
 
     if len(parts) < 6:
-        continue  # skip incomplete rows
+        continue
 
     date_str = parts[0]
     name = parts[2]
     remarks = parts[5]
 
     try:
-        entry_date = datetime.date(2025, 5, int(date_str))  # since it's May 2025
+        entry_date = datetime.date(2025, 5, int(date_str))
     except ValueError:
         continue
 
@@ -71,11 +69,8 @@ for line in lines:
         else:
             users_to_alert.append(f"{name} is on-call monitoring tomorrow ({formatted_date}).")
 
-# Step 3: Send Slack alert
 if users_to_alert:
-    message = "*On-Call Monitoring Reminder:*\n"
-    message += "\n".join(f"• {entry}" for entry in users_to_alert)
-
+    message = "*On-Call Monitoring Reminder:*\n" + "\n".join(f"• {entry}" for entry in users_to_alert)
     slack_response = requests.post(SLACK_WEBHOOK_URL, json={"text": message})
 
     if slack_response.status_code == 200:
